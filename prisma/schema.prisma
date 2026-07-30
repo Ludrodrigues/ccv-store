@@ -1,0 +1,43 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Get a free hosted Postgres database in seconds: `npx create-db`
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Produto {
+  id              String      @id @default(uuid())
+  nome            String
+  categoria       String
+  quantidadeAtual Int         @default(0)
+  precoVenda      Float       @default(0.0)
+  estoqueMinimo   Int         @default(5)
+  criadoEm        DateTime    @default(now())
+  atualizadoEm    DateTime    @updatedAt
+  itensVenda      ItemVenda[]
+}
+
+model Venda {
+  id             String      @id @default(uuid())
+  data           DateTime    @default(now())
+  formaPagamento String      // PIX, DINHEIRO, CARTAO_CREDITO, CARTAO_DEBITO
+  valorTotal     Float
+  itens          ItemVenda[]
+}
+
+model ItemVenda {
+  id            String  @id @default(uuid())
+  vendaId       String
+  venda         Venda   @relation(fields: [vendaId], references: [id], onDelete: Cascade)
+  produtoId     String
+  produto       Produto @relation(fields: [produtoId], references: [id])
+  quantidade    Int
+  precoUnitario Float   // Registra o valor cobrado no momento da venda
+}
