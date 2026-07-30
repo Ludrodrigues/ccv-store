@@ -2,38 +2,50 @@
 import { prisma } from '../lib/prisma';
 import TabelaEstoque from './components/TabelaEstoque';
 
+// Desativa o cache estático para recalcular os valores a cada atualização de página
 export const revalidate = 0;
 
-export default async function Home() {
+export default async function Page() {
+  // Busca os produtos direto do banco de dados
   const produtos = await prisma.produto.findMany({
     orderBy: { nome: 'asc' },
   });
 
-  // Calcula a soma total de unidades físicas de todos os produtos
-  const totalUnidades = produtos.reduce((acc, item) => acc + item.quantidadeAtual, 0);
+  // Soma do valor total financeiro em estoque (Quantidade × Preço de Venda)
+  const valorTotalEstoque = produtos.reduce(
+    (acc, p) => acc + p.quantidadeAtual * p.precoVenda,
+    0
+  );
 
   return (
     <main className="min-h-screen bg-slate-100 p-4 sm:p-8">
       <div className="max-w-6xl mx-auto space-y-6">
+        
         {/* Cabeçalho */}
-        <header className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-slate-900 text-white p-6 rounded-2xl shadow-md">
+        <header className="flex justify-between items-center bg-slate-900 text-white p-6 rounded-2xl shadow-sm">
           <div>
-            <h1 className="text-2xl font-bold tracking-tight">CCV Store</h1>
-            <p className="text-slate-400 text-sm">Controle de Estoque</p>
-          </div>
-          
-          <div className="flex flex-wrap gap-3">
-            <div className="bg-slate-800 px-4 py-2 rounded-xl text-xs text-slate-300 font-mono border border-slate-700">
-              Tipos cadastrados: <span className="text-blue-400 font-bold">{produtos.length}</span>
-            </div>
-            <div className="bg-slate-800 px-4 py-2 rounded-xl text-xs text-slate-300 font-mono border border-slate-700">
-              Unidades em estoque: <span className="text-emerald-400 font-bold">{totalUnidades}</span>
-            </div>
+            <h1 className="text-2xl font-bold tracking-tight">
+              CCVIDEIRA STORE
+            </h1>
+            <p className="text-slate-400 text-xs mt-1">
+              Gestão de Estoque
+            </p>
           </div>
         </header>
 
-        {/* Tabela de Produtos */}
+        {/* Card: Valor Total do Estoque */}
+        <div className="bg-white p-5 rounded-2xl shadow-sm border border-slate-200">
+          <span className="text-xs font-semibold uppercase text-slate-500 tracking-wider">
+            Valor Total em Estoque
+          </span>
+          <p className="text-3xl font-bold text-emerald-600 mt-1 font-mono">
+            R$ {valorTotalEstoque.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+          </p>
+        </div>
+
+        {/* Tabela de Produtos / Controle de Estoque */}
         <TabelaEstoque produtos={produtos} />
+
       </div>
     </main>
   );
