@@ -25,7 +25,7 @@ export default async function Page() {
         <header className="flex justify-between items-center bg-slate-900 text-white p-6 rounded-2xl shadow-sm">
           <div>
             <h1 className="text-2xl font-bold tracking-tight">
-              CCVIDEIRA STORE
+              CCVIDEIRA STORE - Candelária
             </h1>
             <p className="text-slate-400 text-xs mt-1">
               Gestão de Estoque
