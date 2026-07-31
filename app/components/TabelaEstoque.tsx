@@ -81,9 +81,9 @@ export default function TabelaEstoque({ produtos }: TabelaEstoqueProps) {
 
           <button
             onClick={() => setModalVendaAberto(true)}
-            className="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white text-sm font-semibold rounded-xl transition-colors shadow-sm whitespace-nowrap"
+            className="px-4 py-2 bg-zinc-900 hover:bg-blue-500 text-white text-sm font-semibold rounded-xl transition-colors shadow-sm whitespace-nowrap"
           >
-            🛒 Registrar Venda
+            Registrar Venda
           </button>
 
           <button
@@ -112,82 +112,97 @@ export default function TabelaEstoque({ produtos }: TabelaEstoqueProps) {
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100 text-sm">
-              {produtosFiltrados.length === 0 ? (
-                <tr>
-                  <td colSpan={5} className="py-8 text-center text-slate-400">
-                    Nenhum produto encontrado.
-                  </td>
-                </tr>
-              ) : (
-                produtosFiltrados.map((item) => {
-                  const estoqueBaixo = item.quantidadeAtual <= item.estoqueMinimo;
+  {produtosFiltrados.length === 0 ? (
+    <tr>
+      <td colSpan={5} className="py-8 text-center text-slate-400">
+        Nenhum produto encontrado.
+      </td>
+    </tr>
+  ) : (
+    produtosFiltrados.map((item) => {
+      const estoqueBaixo = item.quantidadeAtual <= item.estoqueMinimo;
 
-                  return (
-                    <tr key={item.id} className="hover:bg-slate-50/80 transition-colors">
-                      <td className="py-3.5 px-4 font-medium text-slate-800">
-                        {item.nome}
-                      </td>
-                      <td className="py-3.5 px-4">
-                        <span className="inline-block px-2.5 py-1 text-xs font-semibold text-slate-600 bg-slate-100 rounded-full">
-                          {item.categoria}
-                        </span>
-                      </td>
-                      <td className="py-3.5 px-4 text-right font-mono text-slate-700">
-                        {item.precoVenda > 0
-                          ? `R$ ${item.precoVenda.toFixed(2)}`
-                          : 'R$ 0,00'}
-                      </td>
-                      <td className="py-3.5 px-4 text-center">
-                        <span
-                          className={`inline-block px-3 py-1 text-xs font-bold rounded-full ${
-                            estoqueBaixo
-                              ? 'bg-amber-100 text-amber-800 border border-amber-200'
-                              : 'bg-emerald-100 text-emerald-800 border border-emerald-200'
-                          }`}
-                        >
-                          {item.quantidadeAtual} un
-                        </span>
-                      </td>
-                      <td className="py-3.5 px-4">
-                        <div className="flex items-center justify-center gap-1.5">
-                          <button
-                            onClick={() => alterarQuantidade(item.id, -1)}
-                            className="w-8 h-8 rounded-lg border border-rose-200 text-rose-600 hover:bg-rose-50 font-bold transition-colors flex items-center justify-center text-base"
-                            title="Remover 1 unidade (Ajuste Rápido)"
-                          >
-                            -
-                          </button>
-                          <button
-                            onClick={() => alterarQuantidade(item.id, 1)}
-                            className="w-8 h-8 rounded-lg border border-emerald-200 text-emerald-600 hover:bg-emerald-50 font-bold transition-colors flex items-center justify-center text-base"
-                            title="Adicionar 1 unidade (Ajuste Rápido)"
-                          >
-                            +
-                          </button>
-                          <button
-                            onClick={() => {
-                              setProdutoEditando(item);
-                              setModalProdutoAberto(true);
-                            }}
-                            className="px-2.5 py-1 text-xs font-semibold rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-100 transition-colors"
-                            title="Editar dados do produto"
-                          >
-                            Editar
-                          </button>
-                          <button
-                            onClick={() => handleExcluir(item.id, item.nome)}
-                            className="px-2 py-1 text-xs font-semibold rounded-lg text-rose-500 hover:bg-rose-50 transition-colors"
-                            title="Excluir produto"
-                          >
-                            ✕
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  );
-                })
-              )}
-            </tbody>
+      return (
+        <tr
+          key={item.id}
+          /* 
+            MICROINTERAÇÃO DA LINHA:
+            - group: Permite controlar estilos de elementos filhos no hover da linha.
+            - border-l-4: Destaque discreto na borda esquerda sem criar falsa affordance de clique na linha inteira.
+          */
+          className="group hover:bg-slate-50/90 transition-all duration-150 border-l-4 border-l-transparent hover:border-l-slate-900"
+        >
+          <td className="py-3.5 px-4 font-medium text-slate-800 group-hover:text-slate-950 transition-colors">
+            {item.nome}
+          </td>
+          <td className="py-3.5 px-4">
+            <span className="inline-block px-2.5 py-1 text-xs font-semibold text-slate-600 bg-slate-100 rounded-full group-hover:bg-slate-200/70 transition-colors">
+              {item.categoria}
+            </span>
+          </td>
+          <td className="py-3.5 px-4 text-right font-mono text-slate-700 font-medium">
+            {item.precoVenda > 0
+              ? `R$ ${item.precoVenda.toFixed(2)}`
+              : 'R$ 0,00'}
+          </td>
+          <td className="py-3.5 px-4 text-center">
+            <span
+              className={`inline-block px-3 py-1 text-xs font-bold rounded-full transition-transform group-hover:scale-105 duration-150 ${
+                estoqueBaixo
+                  ? 'bg-amber-100 text-amber-800 border border-amber-200'
+                  : 'bg-emerald-100 text-emerald-800 border border-emerald-200'
+              }`}
+            >
+              {item.quantidadeAtual} un
+            </span>
+          </td>
+          <td className="py-3.5 px-4">
+            <div className="flex items-center justify-center gap-1.5">
+              {/* Botão Subtrair */}
+              <button
+                onClick={() => alterarQuantidade(item.id, -1)}
+                className="w-8 h-8 rounded-lg border border-rose-200 text-rose-600 hover:bg-rose-600 hover:text-white hover:border-rose-600 active:scale-90 transition-all duration-150 font-bold flex items-center justify-center text-base shadow-sm"
+                title="Remover 1 unidade (Ajuste Rápido)"
+              >
+                -
+              </button>
+
+              {/* Botão Adicionar */}
+              <button
+                onClick={() => alterarQuantidade(item.id, 1)}
+                className="w-8 h-8 rounded-lg border border-emerald-200 text-emerald-600 hover:bg-emerald-600 hover:text-white hover:border-emerald-600 active:scale-90 transition-all duration-150 font-bold flex items-center justify-center text-base shadow-sm"
+                title="Adicionar 1 unidade (Ajuste Rápido)"
+              >
+                +
+              </button>
+
+              {/* Botão Editar */}
+              <button
+                onClick={() => {
+                  setProdutoEditando(item);
+                  setModalProdutoAberto(true);
+                }}
+                className="px-2.5 py-1 text-xs font-semibold rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-800 hover:text-white hover:border-slate-800 active:scale-95 transition-all duration-150 shadow-sm"
+                title="Editar dados do produto"
+              >
+                Editar
+              </button>
+
+              {/* Botão Excluir */}
+              <button
+                onClick={() => handleExcluir(item.id, item.nome)}
+                className="px-2 py-1 text-xs font-semibold rounded-lg text-rose-500 hover:bg-rose-100 hover:text-rose-700 active:scale-90 transition-all duration-150"
+                title="Excluir produto"
+              >
+                ✕
+              </button>
+            </div>
+          </td>
+        </tr>
+      );
+    })
+  )}
+</tbody>
           </table>
         </div>
       </div>
